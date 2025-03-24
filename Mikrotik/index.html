@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>LCP Security Center</title>
+  <!-- Chart.js via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    /* RESET BÁSICO */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 1920px;
+      height: 1080px;
+
+      background: #0B1016; /* Fundo geral escuro */
+      color: #FFFFFF;
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;        /* Centraliza no eixo horizontal */
+      justify-content: flex-start;/* Header fica no topo */
+    }
+
+    /**********************************
+     * HEADER
+     **********************************/
+    header {
+      width: 100%;
+      height: 50px;
+      background: #141A1F;
+      display: flex;
+      align-items: center;
+      justify-content: center; /* Centraliza conteúdo do header */
+      padding: 0 30px;
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-logo {
+      height: 30px;
+    }
+
+    .header-separator {
+      color: #235232;
+      font-weight: bold;
+    }
+
+    .header-title {
+      font-size: 1rem;
+      text-transform: uppercase;
+    }
+
+    /**********************************
+     * MAIN
+     **********************************/
+    main {
+      width: 100%;
+      max-width: 1600px;  /* Ajuste conforme desejar */
+      height: calc(100% - 50px);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 20px;
+    }
+
+    /* Container para a linha de 6 cards */
+    .cards-row {
+      display: flex;
+      gap: 20px;
+      padding-top: 20px;
+      justify-content: space-between;
+    }
+
+      /********************************************************
+     * PRIMEIROS 3 CARDS - ÍCONE NO TOPO (info-card)
+     ********************************************************/
+     .info-card {
+      flex: 1;
+      background-color: #19222C;
+      border-radius: 6px;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+
+      /* Tamanho aproximado quadrado */
+      min-width: 150px;
+      min-height: 140px;
+
+      /* Para centralizar tudo */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      padding: 10px;
+    }
+
+    /* Ícone no topo */
+    .info-card .card-icon-top {
+      margin-bottom: 10px;
+      opacity: 0.8;
+    }
+    .info-card .card-icon-top img {
+      width: 40px;
+      height: 40px;
+    }
+
+    /* Título e valor centralizados */
+    .info-card h2 {
+      font-size: 0.8rem;
+      color: #9EA7B3;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 5px;
+      font-weight: 400;
+    }
+    .info-card p {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #fff;
+      text-align: center;
+    }
+
+    /********************************************************
+     * ÚLTIMOS 3 CARDS - ÍCONE NO CANTO, TÍTULO E VALOR
+     ********************************************************/
+    .corner-card {
+      flex: 1;
+      background: linear-gradient(to bottom right, #19222C 70%, #235232 100%);
+      border-radius: 6px;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+      position: relative;
+      padding: 10px;
+      min-width: 150px; 
+      min-height: 140px;
+    }
+
+    /* Título no canto superior direito */
+    .corner-card .corner-title {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 0.8rem;
+      color: #9EA7B3;
+      text-transform: uppercase;
+      font-weight: 400;
+    }
+
+    /* Valor no canto inferior direito */
+    .corner-card .corner-value {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* Ícone no canto inferior esquerdo */
+    .corner-card .corner-icon {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      opacity: 0.8;
+    }
+    .corner-card .corner-icon img {
+      width: 40px;
+      height: 40px;
+    }
+
+
+    /**********************************
+     * GRÁFICOS (LINHA COM 2 GRÁFICOS)
+     * TÍTULO ACIMA CENTRALIZADO
+     **********************************/
+    .charts-row {
+      display: flex;
+      gap: 20px;
+      width: 100%;
+      justify-content: space-between;
+      height: 300px;
+    }
+
+    .chart-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .chart-title {
+      font-size: 1rem;
+      text-transform: uppercase;
+      color: #9EA7B3;
+      text-align: center;
+      margin-top: 5px;
+    }
+
+    /* Palavra em destaque (verde) */
+    .chart-title .highlight {
+    background: linear-gradient(to bottom right, #158057, #4e7718);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+
+    .chart-box {
+      flex: 1;
+      background: #19222C;
+      border-radius: 10px;
+      padding: 10px;
+      position: relative;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden; /* Impede canvas de extrapolar */
+    }
+
+    .chart-container {
+      flex: 1;
+      position: relative;
+      max-height: 100%;
+      overflow: hidden;
+    }
+
+    .chart-container canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    /**********************************
+     * CARDS INTERMEDIÁRIOS (6) - STATUS
+     **********************************/
+    .status-row {
+      display: flex;
+      gap: 20px;
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .status-card {
+      flex: 1;
+      background: linear-gradient(to bottom right, #19222C 70%, #1D2630 100%);
+      border-radius: 10px;
+      padding: 10px 15px;
+      text-align: center;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+    }
+
+    .status-card p {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+      color: #9EA7B3;
+    }
+
+    .status-card span {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    /**********************************
+     * SEÇÃO FINAL: TABELA (4/6),
+     * CARD (1/6), GRÁFICO (1/6)
+     **********************************/
+    .bottom-row {
+      display: flex;
+      gap: 20px;
+      width: 100%;
+      height: 300px;
+    }
+
+    /* TABELA - 4/6 */
+    .table-box {
+      flex: 4;
+      background: #19222C;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .table-box h4 {
+      font-size: 1rem;
+      margin-bottom: 10px;
+      color: #9EA7B3;
+      text-transform: uppercase;
+    }
+
+    .table-box table {
+      width: 100%;
+      border-collapse: collapse;
+      color: #fff;
+    }
+
+    .table-box thead {
+      background: #141A1F;
+    }
+
+    .table-box th, .table-box td {
+      padding: 8px 10px;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    .table-box th {
+      color: #9EA7B3;
+      text-transform: uppercase;
+    }
+
+    .table-box tr:not(:last-child) {
+      border-bottom: 1px solid #2C353F;
+    }
+
+    /* CARD - 1/6 */
+    .software-card {
+      flex: 1;
+      background: linear-gradient(to bottom right, #19222C 70%, #1D2630 100%);
+      border-radius: 10px;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      text-align: center;
+      padding: 10px;
+    }
+
+    .software-card span {
+      font-weight: bold;
+      font-size: 1.3rem;
+      color: #fff;
+      margin-left: 5px;
+    }
+
+    /* GRÁFICO - 1/6 */
+    .small-chart-box {
+      flex: 1;
+      background: #19222C;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .small-chart-box h4 {
+      font-size: 1rem;
+      margin-bottom: 10px;
+      color: #9EA7B3;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    .small-chart-container {
+      flex: 1;
+      position: relative;
+      max-height: 100%;
+      overflow: hidden;
+    }
+
+    .small-chart-container canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER COM CONTEÚDO CENTRALIZADO -->
+  <header>
+    <div class="header-content">
+      <img src="https://steelbras.com.br/wp-content/uploads/Bola.png"
+           alt="Logo LCP" class="header-logo">
+      <span class="header-separator">|</span>
+      <h1 class="header-title">Mikrotik Panel</h1>
+    </div>
+  </header>
+
+  <main>
+    <!-- LINHA 1: 6 CARDS SUPERIORES -->
+    <div class="cards-row">
+        <!-- 3 primeiros cards (ícone no topo) -->
+        <div class="info-card">
+          <div class="card-icon-top">
+            <img src="C:\Users\diego.godoy\Desktop\GitHub\Dashboards-Grafana-Steelbras\image.png" alt="Ícone 1">
+          </div>
+          <h2>Data Expiração da Licença</h2>
+          <p>2028-05-24</p>
+        </div>
+    
+        <div class="info-card">
+          <div class="card-icon-top">
+            <img src="C:\Users\diego.godoy\Desktop\GitHub\Dashboards-Grafana-Steelbras\image.png" alt="Ícone 2">
+          </div>
+          <h2>Dias Restantes</h2>
+          <p>1181 Dias</p>
+        </div>
+    
+        <div class="info-card">
+          <div class="card-icon-top">
+            <img src="C:\Users\diego.godoy\Desktop\GitHub\Dashboards-Grafana-Steelbras\image.png" alt="Ícone 3">
+          </div>
+          <h2>Total de Hosts</h2>
+          <p>150</p>
+        </div>
+    
+        <!-- 3 últimos cards (ícone no canto inferior esquerdo) -->
+        <div class="corner-card">
+          <div class="corner-title">Status Crítico</div>
+          <div class="corner-value">05</div>
+          <div class="corner-icon">
+            <img src="C:\Users\diego.godoy\Desktop\GitHub\Dashboards-Grafana-Steelbras\image.png" alt="Ícone 4">
+          </div>
+        </div>
+    
+        <div class="corner-card">
+          <div class="corner-title">Status Aviso</div>
+          <div class="corner-value">80</div>
+          <div class="corner-icon">
+            <img src="C:\Users\diego.godoy\Desktop\GitHub\Dashboards-Grafana-Steelbras\image.png" alt="Ícone 5">
+          </div>
+        </div>
+    
+        <div class="corner-card">
+          <div class="corner-title">Status Ok</div>
+          <div class="corner-value">65</div>
+          <div class="corner-icon">
+            <img src="C:\Users\diego.godoy\Desktop\GitHub\Dashboards-Grafana-Steelbras\image.png" alt="Ícone 6">
+          </div>
+        </div>
+      </div>
+
+    <!-- LINHA 2: TÍTULO ACIMA + GRÁFICOS (BARRAS E PIZZA) -->
+    <div class="charts-row">
+      <!-- Primeiro gráfico -->
+      <div class="chart-wrapper">
+        <h3 class="chart-title"><span class="highlight">Quantidade</span> Sistemas Operacionais</h3>
+        <div class="chart-box">
+          <div class="chart-container">
+            <canvas id="barChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Segundo gráfico (Pizza) -->
+      <div class="chart-wrapper">
+        <h3 class="chart-title"><span class="highlight">Gráfico</span> Sistemas</h3>
+        <div class="chart-box">
+          <div class="chart-container">
+            <canvas id="pieChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LINHA 3: 6 CARDS INTERMEDIÁRIOS (STATUS HOSTS) -->
+    <div class="status-row">
+      <div class="status-card">
+        <p>Falha</p>
+        <span>2</span>
+      </div>
+      <div class="status-card">
+        <p>Parado</p>
+        <span>0</span>
+      </div>
+      <div class="status-card">
+        <p>Iniciando</p>
+        <span>0</span>
+      </div>
+      <div class="status-card">
+        <p>Em Execução</p>
+        <span>136</span>
+      </div>
+      <div class="status-card">
+        <p>Suspenso</p>
+        <span>0</span>
+      </div>
+      <div class="status-card">
+        <p>Desconhecido</p>
+        <span>0</span>
+      </div>
+    </div>
+
+    <!-- LINHA 4: TABELA (4/6), CARD (1/6), GRÁFICO (1/6) -->
+    <div class="bottom-row">
+      <!-- Tabela (4/6) -->
+      <div class="table-box">
+        <h4>Hosts - Real Time Protection</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Nome do Software</th>
+              <th>Instalações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>iReasoning MIB Browser</td>
+              <td>2</td>
+            </tr>
+            <tr>
+              <td>Mockoon 9.0.0</td>
+              <td>1</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Card (1/6) -->
+      <div class="software-card">
+        Total de Software <span>118</span>
+      </div>
+
+      <!-- Gráfico (1/6) -->
+      <div class="small-chart-box">
+        <h4>Softwares</h4>
+        <div class="small-chart-container">
+          <canvas id="smallPieChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- SCRIPT PARA OS GRÁFICOS -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // GRÁFICO DE BARRAS HORIZONTAL
+      const barCtx = document.getElementById('barChart').getContext('2d');
+      new Chart(barCtx, {
+        type: 'bar',
+        data: {
+          labels: [
+            'Windows 7',
+            'Windows 10',
+            'Windows 11',
+            'Ubuntu Server 22.04',
+            'CentOS 7',
+            'CentOS 8',
+            'Windows Server 2012',
+            'Windows Server 2016',
+            'Windows Server 2019'
+          ],
+          datasets: [{
+            label: 'Sistemas',
+            data: [2, 60, 5, 10, 2, 2, 1, 2, 3],
+            backgroundColor: '#4CD137'
+          }]
+        },
+        options: {
+          indexAxis: 'y', // Barras horizontais
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              ticks: { color: '#fff' },
+              grid: { color: 'rgba(255,255,255,0.1)' }
+            },
+            y: {
+              ticks: { color: '#fff' },
+              grid: { color: 'rgba(255,255,255,0.1)' }
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            }
+          }
+        }
+      });
+
+      // GRÁFICO DE PIZZA (SISTEMAS) - COM LEGEND EMBAIXO E ESTILIZAÇÃO
+      const pieCtx = document.getElementById('pieChart').getContext('2d');
+      new Chart(pieCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Windows', 'Linux', 'Servers'],
+          datasets: [{
+            data: [70, 15, 15],
+            backgroundColor: ['#4CD137', '#0097e6', '#8c7ae6'],
+            borderColor: '#0B1016',  // cor do contorno
+            borderWidth: 2,
+            hoverOffset: 10  // desloca o segmento ao passar o mouse
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '60%', // Mais ou menos \"espessura\" do donut
+          plugins: {
+            legend: {
+              position: 'bottom',  // Legenda embaixo
+              labels: {
+                color: '#fff',
+                boxWidth: 20,
+                boxHeight: 20
+              }
+            }
+          }
+        }
+      });
+
+      // GRÁFICO DE PIZZA PEQUENO (SOFTWARES) - LEGEND EMBAIXO, ESTILIZADO
+      const smallPieCtx = document.getElementById('smallPieChart').getContext('2d');
+      new Chart(smallPieCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Homologados', 'Não Homologados'],
+          datasets: [{
+            data: [116, 2],
+            backgroundColor: ['#2ECC71', '#E74C3C'],
+            borderColor: '#0B1016',
+            borderWidth: 2,
+            hoverOffset: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '60%',
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                color: '#fff',
+                boxWidth: 20,
+                boxHeight: 20
+              }
+            }
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
