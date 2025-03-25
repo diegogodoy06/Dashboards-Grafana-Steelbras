@@ -5,6 +5,8 @@
   <title>LCP Security Center</title>
   <!-- Chart.js via CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
 
   <style>
     /* RESET BÁSICO */
@@ -18,7 +20,10 @@
       width: 1920px;
       height: 1080px;
 
-      background: #0B1016; /* Fundo geral escuro */
+      background-image: url('C:/Users/diego.godoy/Desktop/GitHub/Dashboards-Grafana-Steelbras/back.webp');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
       color: #FFFFFF;
       font-family: 'Arial', sans-serif;
       display: flex;
@@ -33,7 +38,7 @@
     header {
       width: 100%;
       height: 50px;
-      background: #141A1F;
+      background: #121a25;
       display: flex;
       align-items: center;
       justify-content: center; /* Centraliza conteúdo do header */
@@ -51,8 +56,8 @@
     }
 
     .header-separator {
-      color: #235232;
-      font-weight: bold;
+      color: #08832f;
+      font-size: 30px;
     }
 
     .header-title {
@@ -86,7 +91,7 @@
      ********************************************************/
      .info-card {
       flex: 1;
-      background-color: #19222C;
+      background-color: #121a25;
       border-radius: 6px;
       box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
 
@@ -134,7 +139,7 @@
      ********************************************************/
     .corner-card {
       flex: 1;
-      background: linear-gradient(to bottom right, #19222C 70%, #235232 100%);
+      background: linear-gradient(to bottom right, #121a25 70%, #235232 100%);
       border-radius: 6px;
       box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
       position: relative;
@@ -204,6 +209,22 @@
       margin-top: 5px;
     }
 
+    .chart-title-of {
+      font-size: 1rem;
+      text-transform: uppercase;
+      color: #ffffff;
+      text-align: center;
+      margin-top: 5px;
+    }
+
+    .chart-title-of .highlight {
+      background: linear-gradient(to bottom right, #1bd38c, #669e1d);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+  }
+
+
     /* Palavra em destaque (verde) */
     .chart-title .highlight {
     background: linear-gradient(to bottom right, #158057, #4e7718);
@@ -215,7 +236,7 @@
 
     .chart-box {
       flex: 1;
-      background: #19222C;
+      background: #121a25;
       border-radius: 10px;
       padding: 10px;
       position: relative;
@@ -250,7 +271,7 @@
 
     .status-card {
       flex: 1;
-      background: linear-gradient(to bottom right, #19222C 70%, #1D2630 100%);
+      background: linear-gradient(to bottom right, #121a25 70%, #1D2630 100%);
       border-radius: 10px;
       padding: 10px 15px;
       text-align: center;
@@ -284,7 +305,7 @@
     /* TABELA - 4/6 */
     .table-box {
       flex: 4;
-      background: #19222C;
+      background: #121a25;
       border-radius: 10px;
       padding: 20px;
       box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
@@ -383,7 +404,7 @@
   <!-- HEADER COM CONTEÚDO CENTRALIZADO -->
   <header>
     <div class="header-content">
-      <img src="https://steelbras.com.br/wp-content/uploads/Bola.png"
+      <img src="https://i.ibb.co/v4rznNmd/logo.png"
            alt="Logo LCP" class="header-logo">
       <span class="header-separator">|</span>
       <h1 class="header-title">Mikrotik Panel</h1>
@@ -448,7 +469,7 @@
     <div class="charts-row">
       <!-- Primeiro gráfico -->
       <div class="chart-wrapper">
-        <h3 class="chart-title"><span class="highlight">Quantidade</span> Sistemas Operacionais</h3>
+        <h3 class="chart-title-of"><span class="highlight">Quantidade</span> Sistemas Operacionais</h3>
         <div class="chart-box">
           <div class="chart-container">
             <canvas id="barChart"></canvas>
@@ -458,7 +479,7 @@
 
       <!-- Segundo gráfico (Pizza) -->
       <div class="chart-wrapper">
-        <h3 class="chart-title"><span class="highlight">Gráfico</span> Sistemas</h3>
+        <h3 class="chart-title-of"><span class="highlight">Gráfico</span> Sistemas</h3>
         <div class="chart-box">
           <div class="chart-container">
             <canvas id="pieChart"></canvas>
@@ -536,114 +557,147 @@
   </main>
 
   <!-- SCRIPT PARA OS GRÁFICOS -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // GRÁFICO DE BARRAS HORIZONTAL
-      const barCtx = document.getElementById('barChart').getContext('2d');
-      new Chart(barCtx, {
-        type: 'bar',
-        data: {
-          labels: [
-            'Windows 7',
-            'Windows 10',
-            'Windows 11',
-            'Ubuntu Server 22.04',
-            'CentOS 7',
-            'CentOS 8',
-            'Windows Server 2012',
-            'Windows Server 2016',
-            'Windows Server 2019'
-          ],
-          datasets: [{
-            label: 'Sistemas',
-            data: [2, 60, 5, 10, 2, 2, 1, 2, 3],
-            backgroundColor: '#4CD137'
-          }]
-        },
-        options: {
-          indexAxis: 'y', // Barras horizontais
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            x: {
-              ticks: { color: '#fff' },
-              grid: { color: 'rgba(255,255,255,0.1)' }
-            },
-            y: {
-              ticks: { color: '#fff' },
-              grid: { color: 'rgba(255,255,255,0.1)' }
-            }
+<!-- Certifique-se de incluir o Chart.js e o plugin ChartDataLabels -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // GRÁFICO DE BARRAS HORIZONTAL
+    const barCtx = document.getElementById('barChart').getContext('2d');
+    
+    // Dados dos gráficos
+    const mainData = [2, 60, 5, 10, 2, 2, 1, 2, 3];
+    const maxValue = Math.max(...mainData);
+    const backgroundData = mainData.map(() => maxValue);
+
+    // Cria um gradiente horizontal para as barras dos dados
+    const gradient = barCtx.createLinearGradient(0, 0, barCtx.canvas.width, 0);
+    gradient.addColorStop(0, '#4CD137');
+    gradient.addColorStop(1, '#00a8ff');
+
+    new Chart(barCtx, {
+      type: 'bar',
+      data: {
+        labels: [
+          'Windows 7',
+          'Windows 10',
+          'Windows 11',
+          'Ubuntu Server 22.04',
+          'CentOS 7',
+          'CentOS 8',
+          'Windows Server 2012',
+          'Windows Server 2016',
+          'Windows Server 2019'
+        ],
+        datasets: [
+          {
+            // Camada de fundo para as barras
+            label: 'Fundo',
+            data: backgroundData,
+            backgroundColor: '#2C353F',
+            borderRadius: 10, // arredonda os 4 cantos
+            barThickness: 20,
+            order: 1,
+            hoverBackgroundColor: '#2C353F'
           },
-          plugins: {
-            legend: {
-              display: false
-            }
+          {
+            // Camada dos dados com gradiente
+            label: 'Dados',
+            data: mainData,
+            backgroundColor: gradient,
+            borderRadius: 10, // arredonda os 4 cantos
+            barThickness: 20,
+            order: 2
           }
-        }
-      });
-
-      // GRÁFICO DE PIZZA (SISTEMAS) - COM LEGEND EMBAIXO E ESTILIZAÇÃO
-      const pieCtx = document.getElementById('pieChart').getContext('2d');
-      new Chart(pieCtx, {
-        type: 'doughnut',
-        data: {
-          labels: ['Windows', 'Linux', 'Servers'],
-          datasets: [{
-            data: [70, 15, 15],
-            backgroundColor: ['#4CD137', '#0097e6', '#8c7ae6'],
-            borderColor: '#0B1016',  // cor do contorno
-            borderWidth: 2,
-            hoverOffset: 10  // desloca o segmento ao passar o mouse
-          }]
+        ]
+      },
+      options: {
+        indexAxis: 'y',  // barras horizontais
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { color: '#fff' }
+          },
+          y: {
+            grid: { display: false },
+            ticks: { color: '#fff' }
+          }
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          cutout: '60%', // Mais ou menos \"espessura\" do donut
-          plugins: {
-            legend: {
-              position: 'bottom',  // Legenda embaixo
-              labels: {
-                color: '#fff',
-                boxWidth: 20,
-                boxHeight: 20
-              }
-            }
-          }
+        plugins: {
+          legend: { display: false }
         }
-      });
-
-      // GRÁFICO DE PIZZA PEQUENO (SOFTWARES) - LEGEND EMBAIXO, ESTILIZADO
-      const smallPieCtx = document.getElementById('smallPieChart').getContext('2d');
-      new Chart(smallPieCtx, {
-        type: 'doughnut',
-        data: {
-          labels: ['Homologados', 'Não Homologados'],
-          datasets: [{
-            data: [116, 2],
-            backgroundColor: ['#2ECC71', '#E74C3C'],
-            borderColor: '#0B1016',
-            borderWidth: 2,
-            hoverOffset: 8
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          cutout: '60%',
-          plugins: {
-            legend: {
-              position: 'bottom',
-              labels: {
-                color: '#fff',
-                boxWidth: 20,
-                boxHeight: 20
-              }
-            }
-          }
-        }
-      });
+      }
     });
-  </script>
+
+    // GRÁFICO DE PIZZA (DOUGHNUT)
+    const pieCtx = document.getElementById('pieChart').getContext('2d');
+    new Chart(pieCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Windows', 'Linux', 'Servers'],
+        datasets: [{
+          data: [70, 15, 15],
+          backgroundColor: ['#4CD137', '#0097e6', '#8c7ae6'],
+          borderColor: '#0B1016',
+          borderWidth: 2,
+          hoverOffset: 10
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '60%',
+        plugins: {
+          legend: { display: false },
+          datalabels: {
+            color: '#fff',
+            formatter: (value, ctx) => ctx.chart.data.labels[ctx.dataIndex],
+            anchor: 'end',
+            align: 'end',
+            offset: 10,
+            font: { weight: 'bold' }
+          }
+        }
+      },
+      plugins: [ChartDataLabels]
+    });
+
+    // GRÁFICO DE PIZZA PEQUENO (SOFTWARES)
+    const smallPieCtx = document.getElementById('smallPieChart').getContext('2d');
+    new Chart(smallPieCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Homologados', 'Não Homologados'],
+        datasets: [{
+          data: [116, 2],
+          backgroundColor: ['#2ECC71', '#E74C3C'],
+          borderColor: '#0B1016',
+          borderWidth: 2,
+          hoverOffset: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '60%',
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              color: '#fff',
+              boxWidth: 20,
+              boxHeight: 20
+            }
+          }
+        }
+      }
+    });
+  });
+</script>
+
+  
 </body>
 </html>
